@@ -3,21 +3,27 @@ import { format } from 'date-fns'
 
 export default function Wizard({ onStart }) {
    const [title, setTitle] = useState('My Goal')
-   const [startDate, setStartDate] = useState(() => format(new Date(), "yyyy-MM-dd'T'HH:mm"))
+   const [startD, setStartD] = useState(() => format(new Date(), "yyyy-MM-dd"))
+   const [startT, setStartT] = useState(() => format(new Date(), "HH:mm"))
    const [targetMode, setTargetMode] = useState('days') // 'days' or 'date'
    const [targetDays, setTargetDays] = useState(90)
-   const [targetDate, setTargetDate] = useState(() => {
+   const [targetD, setTargetD] = useState(() => {
         const d = new Date()
         d.setDate(d.getDate() + 90)
-        return format(d, "yyyy-MM-dd'T'HH:mm")
+        return format(d, "yyyy-MM-dd")
    })
+   const [targetT, setTargetT] = useState(() => format(new Date(), "HH:mm"))
 
    const handleSetNow = () => {
-      setStartDate(format(new Date(), "yyyy-MM-dd'T'HH:mm"))
+      const now = new Date()
+      setStartD(format(now, "yyyy-MM-dd"))
+      setStartT(format(now, "HH:mm"))
    }
 
    const handleSubmit = (e) => {
       e.preventDefault()
+      const startDate = `${startD}T${startT}`
+      const targetDate = `${targetD}T${targetT}`
       onStart(title, startDate, targetMode, targetMode === 'days' ? targetDays : targetDate)
    }
 
@@ -51,7 +57,7 @@ export default function Wizard({ onStart }) {
                      required
                      value={title}
                      onChange={(e) => setTitle(e.target.value)}
-                     className="w-full bg-slate-50/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-medium placeholder:text-slate-400"
+                     className="w-full bg-slate-50/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400"
                      placeholder="e.g. Vacation to Japan"
                   />
                </div>
@@ -70,13 +76,28 @@ export default function Wizard({ onStart }) {
                         <span className="material-symbols-outlined text-[14px]">bolt</span> Set to Now
                      </button>
                   </div>
-                  <input 
-                     type="datetime-local" 
-                     required
-                     value={startDate}
-                     onChange={(e) => setStartDate(e.target.value)}
-                     className="w-full bg-slate-50/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-mono text-sm"
-                  />
+                  <div className="flex gap-3">
+                     <div className="relative w-2/3">
+                        <input 
+                           type="date" 
+                           required
+                           value={startD}
+                           onChange={(e) => setStartD(e.target.value)}
+                           onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                           className="w-full bg-slate-50/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-mono text-sm text-slate-800 dark:text-slate-100 cursor-pointer"
+                        />
+                     </div>
+                     <div className="relative w-1/3">
+                        <input 
+                           type="time" 
+                           required
+                           value={startT}
+                           onChange={(e) => setStartT(e.target.value)}
+                           onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                           className="w-full bg-slate-50/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-mono text-sm text-slate-800 dark:text-slate-100 cursor-pointer"
+                        />
+                     </div>
+                  </div>
                </div>
 
                {/* Target Mode Toggle & Input */}
@@ -85,14 +106,14 @@ export default function Wizard({ onStart }) {
                      <button 
                         type="button"
                         onClick={() => setTargetMode('days')}
-                        className={`flex-1 flex justify-center items-center gap-2 py-2 text-sm font-medium rounded-lg transition-all ${targetMode === 'days' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                        className={`flex-1 flex justify-center items-center gap-2 py-2 text-sm font-medium rounded-lg transition-all cursor-pointer ${targetMode === 'days' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                      >
                         <span className="material-symbols-outlined text-[18px]">calendar_view_week</span> Days
                      </button>
                      <button 
                         type="button"
                         onClick={() => setTargetMode('date')}
-                        className={`flex-1 flex justify-center items-center gap-2 py-2 text-sm font-medium rounded-lg transition-all ${targetMode === 'date' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                        className={`flex-1 flex justify-center items-center gap-2 py-2 text-sm font-medium rounded-lg transition-all cursor-pointer ${targetMode === 'date' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                      >
                         <span className="material-symbols-outlined text-[18px]">event</span> Specific Date
                      </button>
@@ -107,18 +128,33 @@ export default function Wizard({ onStart }) {
                               min="1"
                               value={targetDays}
                               onChange={(e) => setTargetDays(Number(e.target.value))}
-                              className="w-full bg-slate-50/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl pl-4 pr-16 py-3 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-mono text-lg"
+                              className="w-full bg-slate-50/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl pl-4 pr-16 py-3 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-mono text-lg text-slate-800 dark:text-slate-100"
                            />
                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">Days</span>
                         </div>
                      ) : (
-                        <input 
-                           type="datetime-local" 
-                           required
-                           value={targetDate}
-                           onChange={(e) => setTargetDate(e.target.value)}
-                           className="w-full bg-slate-50/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-mono text-sm"
-                        />
+                        <div className="flex gap-3">
+                           <div className="relative w-2/3">
+                              <input 
+                                 type="date" 
+                                 required
+                                 value={targetD}
+                                 onChange={(e) => setTargetD(e.target.value)}
+                                 onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                                 className="w-full bg-slate-50/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-mono text-sm text-slate-800 dark:text-slate-100 cursor-pointer"
+                              />
+                           </div>
+                           <div className="relative w-1/3">
+                              <input 
+                                 type="time" 
+                                 required
+                                 value={targetT}
+                                 onChange={(e) => setTargetT(e.target.value)}
+                                 onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                                 className="w-full bg-slate-50/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-mono text-sm text-slate-800 dark:text-slate-100 cursor-pointer"
+                              />
+                           </div>
+                        </div>
                      )}
                   </div>
                </div>
@@ -126,13 +162,13 @@ export default function Wizard({ onStart }) {
                <div className="pt-4">
                   <button 
                      type="submit"
-                     className="w-full relative overflow-hidden group bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
+                     className="w-full relative overflow-hidden group bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 cursor-pointer"
                   >
                      <span className="relative z-10 flex items-center gap-2">
                         Generate & Start <span className="material-symbols-outlined">rocket_launch</span>
                      </span>
                      {/* Button hover gradient effect */}
-                     <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                     <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                   </button>
                </div>
             </form>

@@ -42,7 +42,7 @@ export default function TimerView({ params }) {
    const targetValue = params.get('targetValue') || '90'
 
    const [now, setNow] = useState(new Date())
-   const [copied, setCopied] = useState(false)
+   const [toastMsg, setToastMsg] = useState('')
 
    useEffect(() => {
       const timer = setInterval(() => setNow(new Date()), 1000)
@@ -69,7 +69,8 @@ export default function TimerView({ params }) {
       percentage = (totalSecondsSinceStart / totalSecondsGoal) * 100
    }
    
-   const clampedPercentage = isNaN(percentage) ? 0 : Math.min(Math.max(percentage, 0), 100).toFixed(2)
+   const clampedPercentageNum = isNaN(percentage) ? 0 : Math.min(Math.max(percentage, 0), 100)
+   const clampedPercentageView = clampedPercentageNum.toFixed(6)
 
    const dateFormatter = new Intl.DateTimeFormat('en-US', {
        day: '2-digit', month: 'short', year: 'numeric',
@@ -78,10 +79,19 @@ export default function TimerView({ params }) {
    
    const untilFormatted = isNaN(dateFuture.getTime()) ? "Invalid Target" : dateFormatter.format(dateFuture)
 
+   const showToast = (msg) => {
+       setToastMsg(msg)
+       setTimeout(() => setToastMsg(''), 3000)
+   }
+
    const copyToClipboard = () => {
        navigator.clipboard.writeText(window.location.href)
-       setCopied(true)
-       setTimeout(() => setCopied(false), 2000)
+       showToast("Link copied to clipboard!")
+   }
+
+   const handleBookmark = () => {
+       const isMac = navigator.userAgent.toLowerCase().includes('mac')
+       showToast(`Press ${isMac ? 'Cmd' : 'Ctrl'} + D to bookmark this timer`)
    }
 
    return (
@@ -90,9 +100,15 @@ export default function TimerView({ params }) {
              <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100 mb-4 drop-shadow-sm">
                  {title}
              </h1>
-             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-sm text-sm font-medium text-slate-600 dark:text-slate-300">
-                <span className="material-symbols-outlined text-[16px] text-blue-500">flag</span>
-                Target: {untilFormatted}
+             <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
+                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-sm text-sm font-medium text-slate-600 dark:text-slate-300">
+                    <span className="material-symbols-outlined text-[16px] text-emerald-500">play_circle</span>
+                    Origin: {dateFormatter.format(dateStart)}
+                 </div>
+                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-sm text-sm font-medium text-slate-600 dark:text-slate-300">
+                    <span className="material-symbols-outlined text-[16px] text-blue-500">flag</span>
+                    Target: {untilFormatted}
+                 </div>
              </div>
          </div>
 
@@ -113,13 +129,13 @@ export default function TimerView({ params }) {
          <div className="max-w-2xl mx-auto mb-10 sm:mb-14">
              <div className="flex justify-between text-xs font-bold text-slate-500 mb-2">
                  <span>0%</span>
-                 <span><span className="text-blue-600 dark:text-cyan-400 font-mono text-sm">{clampedPercentage}%</span> Completed</span>
+                 <span><span className="text-blue-600 dark:text-cyan-400 font-mono text-sm">{clampedPercentageView}%</span> Completed</span>
                  <span>100%</span>
              </div>
              <div className="w-full h-4 bg-slate-200/50 dark:bg-slate-800/50 rounded-full overflow-hidden shadow-inner backdrop-blur-sm border border-slate-300/30 dark:border-slate-700/50">
                  <div 
                      className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(56,189,248,0.5)]"
-                     style={{ width: `${clampedPercentage}%` }}
+                     style={{ width: `${clampedPercentageNum}%` }}
                  />
              </div>
          </div>
@@ -138,28 +154,29 @@ export default function TimerView({ params }) {
 
              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-end gap-3">
                  <button 
-                     onClick={() => alert("Press " + (navigator.userAgent.toLowerCase().includes('mac') ? 'Cmd' : 'Ctrl') + " + D to bookmark this timer.")}
-                     className="px-5 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-300 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-sm w-full sm:w-auto"
+                     onClick={handleBookmark}
+                     className="px-5 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-300 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-sm w-full sm:w-auto cursor-pointer"
                  >
                      Bookmark <span className="material-symbols-outlined text-[20px]">bookmark</span>
                  </button>
 
                  <button 
                      onClick={copyToClipboard}
-                     className="relative overflow-hidden group px-6 py-4 rounded-xl font-bold flex items-center gap-3 transition-all duration-300 bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 w-full sm:w-auto justify-center"
+                     className="relative overflow-hidden group px-6 py-4 rounded-xl font-bold flex items-center gap-3 transition-all duration-300 bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 w-full sm:w-auto justify-center cursor-pointer"
                  >
                      <span className="relative z-10 flex items-center gap-2">
-                        {copied ? (
-                           <>Copied! <span className="material-symbols-outlined">check_circle</span></>
-                        ) : (
-                           <>Share Link <span className="material-symbols-outlined">share</span></>
-                        )}
+                        Share Link <span className="material-symbols-outlined">share</span>
                      </span>
                      <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                  </button>
              </div>
          </div>
 
+         {toastMsg && (
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full shadow-2xl font-bold flex items-center gap-2 animate-in fade-in slide-in-from-bottom-5 z-[100]">
+                <span className="material-symbols-outlined">info</span> {toastMsg}
+            </div>
+         )}
       </div>
    )
 }
