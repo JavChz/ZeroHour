@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Wizard from './components/Wizard'
 import TimerView from './components/TimerView'
 import ThemeToggle from './components/ThemeToggle'
+import WebGLBackground from './components/WebGLBackground'
 
 function App() {
   const [params, setParams] = useState(() => new URLSearchParams(window.location.search))
@@ -55,11 +56,8 @@ function App() {
   return (
     <div className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-8 transition-colors duration-300">
       
-      {/* Background gradients for premium feel */}
-      <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/20 dark:bg-blue-600/10 blur-3xl"></div>
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-400/20 dark:bg-cyan-500/10 blur-3xl"></div>
-      </div>
+      {/* Dynamic WebGL Background */}
+      <WebGLBackground theme={theme} />
 
       <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
          {hasTimerParams && (
