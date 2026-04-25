@@ -1,16 +1,54 @@
-# React + Vite
+# ZeroHour
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<div align="center">
+  <img src="./src/assets/zerohour_preview.jpg" alt="ZeroHour Preview" width="100%" />
+</div>
 
-Currently, two official plugins are available:
+ZeroHour is a React-based application for creating and sharing countdown timers. The application state is maintained entirely through URL parameters, allowing timers to be shared simply by copying the link without the need for a backend database.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **URL-Based State**: Timer configurations (start date, target, and title) are encoded in the URL (`?title=...&start=...&targetType=...`), allowing for easy sharing without a backend.
+- **Responsive UI**: Built with Tailwind CSS v4, supporting both Light and Dark modes. Theme preferences are saved in `localStorage`.
+- **Progress Tracking**: Displays time elapsed, time remaining, and a high-precision progress bar.
+- **Native Data Input**: Uses native browser interfaces for date and time selection to balance usability and mobile compatibility.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Live Demo
+Check out the project live at: [https://javchz.github.io/ZeroHour/](https://javchz.github.io/ZeroHour/)
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React + Vite
+- Tailwind CSS v4
+- `date-fns` for date manipulation
+- Google Fonts & Material Symbols
+
+## Local Setup
+
+### Prerequisites
+- Node.js
+- npm
+
+### Installation
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/JavChz/ZeroHour.git
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Start the development server:
+   ```sh
+   npm run dev
+   ```
+
+### Deployment
+To deploy to GitHub Pages, use the provided npm script:
+```sh
+npm run deploy
+```
+This command builds the project into the `dist` directory and pushes it to the `gh-pages` branch.
+
+## License
+Distributed under the MIT License.
