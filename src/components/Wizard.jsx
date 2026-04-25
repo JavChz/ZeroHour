@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 
 export default function Wizard({ onStart }) {
    const DEFAULT_DAYS = 21;
+   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
    const [title, setTitle] = useState('My Goal')
    const [startD, setStartD] = useState(() => format(new Date(), "yyyy-MM-dd"))
    const [startT, setStartT] = useState(() => format(new Date(), "HH:mm"))
@@ -21,6 +22,14 @@ export default function Wizard({ onStart }) {
       setStartT(format(now, "HH:mm"))
    }
 
+   const handleMouseMove = (e) => {
+      const rect = e.currentTarget.getBoundingClientRect()
+      setMousePos({
+         x: e.clientX - rect.left,
+         y: e.clientY - rect.top
+      })
+   }
+
    const handleSubmit = (e) => {
       e.preventDefault()
       const startDate = `${startD}T${startT}`
@@ -29,8 +38,19 @@ export default function Wizard({ onStart }) {
    }
 
    return (
-      <div className="w-full max-w-lg mx-auto transform transition duration-500 hover:scale-[1.01]">
-         <div className="p-8 backdrop-blur-xl bg-white/40 dark:bg-slate-900/60 border border-white/50 dark:border-slate-700/50 rounded-3xl shadow-2xl relative overflow-hidden">
+      <div className="w-full max-w-lg mx-auto">
+         <div 
+            className="p-8 backdrop-blur-xl bg-white/40 dark:bg-slate-900/60 border border-white/50 dark:border-slate-700/50 rounded-3xl shadow-2xl relative overflow-hidden group"
+            onMouseMove={handleMouseMove}
+         >
+
+            {/* Spotlight glow tracking the mouse! */}
+            <div 
+               className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"
+               style={{
+                  background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(56, 189, 248, 0.12), transparent 40%)`
+               }}
+            />
 
             {/* Subtle inner decorative glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
@@ -72,7 +92,7 @@ export default function Wizard({ onStart }) {
                      <button
                         type="button"
                         onClick={handleSetNow}
-                        className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition flex items-center gap-1"
+                        className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition flex items-center gap-1 cursor-pointer"
                      >
                         <span className="material-symbols-outlined text-[14px]">bolt</span> Set to Now
                      </button>

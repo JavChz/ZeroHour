@@ -65,7 +65,7 @@ function App() {
          {hasTimerParams && (
            <button 
              onClick={editTimer} 
-             className="flex items-center gap-2 px-4 py-2 bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-sm font-medium text-sm"
+             className="flex items-center gap-2 px-4 py-2 bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-sm font-medium text-sm cursor-pointer"
            >
               <span className="material-symbols-outlined text-[18px]">edit</span> 
               <span>New</span>
